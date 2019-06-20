@@ -1,0 +1,91 @@
+{
+    "config": {
+        "target": "http://127.0.0.1:3010",
+        "phases": [
+            {
+                "name": "Start",
+                "duration": 3,
+                "arrivalRate": 1,
+                "rampTo": 10
+            },
+            {
+                "name": "Ramping it Up",
+                "duration": 2,
+                "arrivalRate": 10,
+                "rampTo": 40
+            },
+            {
+                "name": "Lead to Peak Performance",
+                "duration": 3,
+                "arrivalRate": 40,
+                "rampTo": 140
+            },
+            {
+                "name": "Peak Performance",
+                "duration": 120,
+                "arrivalRate": 140,
+                "rampTo": 140
+            },
+            {
+                "name": "Ramping Down",
+                "duration": 5,
+                "arrivalRate": 140,
+                "rampTo": 1
+            }
+        ],
+        "processor": "restaruantIdGenerator_artillery.js"
+    },
+    "scenarios": [
+        {
+            "weight": "75/1000",
+            "flow": [
+                {
+                    "loop": [
+                        {
+                            "function": "postReview"
+                        },
+                        {
+                            "post": {
+                                "url": "/addReview",
+                                "json": {
+                                    "userid": "{{ $randomNumber(1,3333333) }}",
+                                    "restaurantid": "{{ $randomNumber(1,10000000) }}",
+                                    "reportcount": "{{ $randomNumber(1,4) }}",
+                                    "helpfulcount": "{{ $randomNumber(1,15) }}",
+                                    "overallrating": "{{ $randomNumber(1,5) }}",
+                                    "foodrating": "{{ $randomNumber(1,5) }}",
+                                    "servicerating": "{{ $randomNumber(1,5) }}",
+                                    "ambiencerating": "{{ $randomNumber(1,5) }}",
+                                    "text": "{{ text }}",
+                                    "approve": "{{ approve }}",
+                                    "noiselevel": "{{ noiseLevel }}",
+                                    "vip": "{{ vip }}",
+                                    "lastdined": "{{ lastDined }}",
+                                    "firstname": "{{ firstName }}",
+                                    "lastname": "{{ lastName }}",
+                                    "location": "{{ location }}"
+                                }
+                            }
+                        }
+                    ],
+                    "count": 5
+                }
+            ]
+        },
+        {
+            "weight": "925/1000",
+            "flow": [
+                {
+                    "loop": [
+                        {
+                            "get": {
+                                "url": "/review/{{ $randomNumber(1,10000000) }}"
+                            }
+                        }
+                    ],
+                    "count": 40
+                }
+            ]
+        }
+    ]
+}
